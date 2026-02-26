@@ -95,7 +95,7 @@ for i, t in enumerate(time_points):
 
     # 计算 L2 范数误差（归一化）
     diff = np.abs(psi_exact - psi_num)
-    error_L2 = np.linalg.norm(diff) * np.sqrt(dx)
+    error_L2 = np.linalg.norm(diff)
     errors.append(error_L2)
 
 errors = np.array(errors)
@@ -157,4 +157,5 @@ print(f"空间备注: 孤子初始中心位于 x = {center}")
 print(f"时间: 总时长 T = {T_total}, 步长 dt = {dt}, 步数 Nt = {Nt}")
 print(f"初始误差 (t=0): {errors[0]:.2e}")
 print(f"最终误差 (t={T_total}): {errors[-1]:.2e}")
+
 print(f"最大误差: {np.max(errors):.2e} (出现在 t ≈ {time_points[np.argmax(errors)]:.2f})")
