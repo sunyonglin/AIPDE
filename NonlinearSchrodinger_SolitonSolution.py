@@ -36,7 +36,9 @@ def exact_solution(x, t, eta=eta, k=k, omega=omega, center_offset=0.0):
     xi = (x - center_offset) - k * t
     envelope = eta / np.cosh(eta * xi)
     phase = np.exp(1j * (k * x - omega * t))
-    return envelope * phase
+    wv = envelope * phase
+    wv /= np.linalg.norm(wv,2)
+    return wv
 
 # 2. 数值解法（Strang分裂法）
 def strang_split(psi0, x, dt, Nt):
@@ -159,3 +161,4 @@ print(f"初始误差 (t=0): {errors[0]:.2e}")
 print(f"最终误差 (t={T_total}): {errors[-1]:.2e}")
 
 print(f"最大误差: {np.max(errors):.2e} (出现在 t ≈ {time_points[np.argmax(errors)]:.2f})")
+
