@@ -20,7 +20,7 @@ def shooting_method_bvp(f, a, b, alpha, beta, gamma_guess, h=0.1, tol=1e-6, max_
         alpha, beta: 边界条件
         gamma_guess: 初始斜率猜测值
         h: 步长
-        tol: 容差
+        tol: 误差阈值
         max_iter: 最大迭代次数
 
     返回:
@@ -70,12 +70,11 @@ def shooting_method_bvp(f, a, b, alpha, beta, gamma_guess, h=0.1, tol=1e-6, max_
         _, _, y_b = solve_ivp(gamma)
         return y_b - beta
 
-    # 使用假位法（False Position Method）寻找正确的gamma
     # 找到两个gamma值使误差异号
     gamma1 = gamma_guess
     error1 = error_function(gamma1)
 
-    # 寻找另一个使误差异号的gamma值
+    # 寻找另一个gamma值
     if error1 > 0:
         gamma2 = gamma1 - 0.1
     else:
@@ -103,13 +102,14 @@ def shooting_method_bvp(f, a, b, alpha, beta, gamma_guess, h=0.1, tol=1e-6, max_
         error2 = error_function(gamma2)
         max_iter -= 1
 
-    # 使用scipy的求根函数（更稳健）
+    # 使用scipy的求根函数
     try:
+        #二分法
         result = root_scalar(error_function, bracket=[min(gamma1, gamma2), max(gamma1, gamma2)],
                              method='bisect', xtol=tol)
         final_gamma = result.root
     except:
-        # 如果bracket方法失败，尝试使用初始猜测值
+        # 割线法
         result = root_scalar(error_function, x0=gamma_guess, fprime=None, method='secant')
         final_gamma = result.root
 
@@ -128,7 +128,7 @@ def shooting_method_eigenvalue(p, a, b, lambda_guess, h=0.1, tol=1e-6):
         a, b: 区间端点
         lambda_guess: 特征值初始猜测
         h: 步长
-        tol: 容差
+        tol: 误差阈值
 
     返回:
         eigenvalue: 找到的特征值
@@ -141,7 +141,7 @@ def shooting_method_eigenvalue(p, a, b, lambda_guess, h=0.1, tol=1e-6):
         return -lam * p(x) * y
 
     def rk4_step_eigen(f, x, y, v, lam, h):
-        """四阶Runge-Kutta法单步（用于特征值问题）"""
+        """四阶Runge-Kutta法单步"""
         k1_y = v
         k1_v = f(x, y, v, lam)
 
